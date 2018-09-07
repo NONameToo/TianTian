@@ -137,7 +137,7 @@ def info(request):
     uname = request.session.get('uname')
     list = UserInfo.objects.filter(uname=uname)
 
-    context = {'title': '个人中心', 'user': list[0]}
+    context = {'title': '个人中心', 'user': list[0], 'page_num':1}
     return render(request, 'df_user/info.html', context)
 
 # 用户订单页面
@@ -148,8 +148,8 @@ def order(request):
     # list = UserInfo.objects.filter(uname=uname)
     # if len(list) == 1:  # 如果查询到了结果
     #     context = {'title': '我的订单', 'uname': uname, 'uphone': list[0].uphone, 'uaddr': list[0].uaddr}
-    context = {'title': '我的订单'}
-    return render(request, 'df_user/order.html')
+    context = {'title': '我的订单', 'page_num':1}
+    return render(request, 'df_user/order.html', context)
 
 def site(request):
 
@@ -164,7 +164,7 @@ def site(request):
         user.save()
 
 
-    context = {'title': '地址管理', 'user': user}
+    context = {'title': '地址管理', 'user': user, 'page_num':1}
 
     return render(request, 'df_user/site.html', context)
 
