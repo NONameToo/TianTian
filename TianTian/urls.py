@@ -19,6 +19,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^tiantian/', include('tiantian.urls', namespace='tiantian'))
+    url(r'^user/', include('df_user.urls', namespace='user')),
 ]
 

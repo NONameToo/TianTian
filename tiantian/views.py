@@ -36,12 +36,12 @@ def register(request):
 
 
 def user_center_info(request):
-    return render(request, 'tiantian/user_center_info.html')
+    return render(request, 'tiantian/info.html')
 
 
 def user_center_order(request):
-    return render(request, 'tiantian/user_center_order.html')
+    return render(request, 'tiantian/order.html')
 
 
 def user_center_site(request):
-    return render(request, 'tiantian/user_center_site.html')
+    return render(request, 'tiantian/site.html')
