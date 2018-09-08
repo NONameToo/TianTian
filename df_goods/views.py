@@ -14,23 +14,23 @@ def index(request):
     # 把每一个分类的最新的和最热的四条拿出来
     typelist = GoodsType.objects.all()
 
-    type1 = typelist[0].goodsinfo_set.order_by('-id')
-    type11 = typelist[0].goodsinfo_set.order_by('-gclick')
+    type1 = typelist[0].goodsinfo_set.order_by('-id')[0: 4]
+    type11 = typelist[0].goodsinfo_set.order_by('-gclick')[0: 4]
 
-    type2 = typelist[1].goodsinfo_set.order_by('-id')
-    type22 = typelist[1].goodsinfo_set.order_by('-gclick')
+    type2 = typelist[1].goodsinfo_set.order_by('-id')[0: 4]
+    type22 = typelist[1].goodsinfo_set.order_by('-gclick')[0: 4]
 
-    type3 = typelist[2].goodsinfo_set.order_by('-id')
-    type33 = typelist[2].goodsinfo_set.order_by('-gclick')
+    type3 = typelist[2].goodsinfo_set.order_by('-id')[0: 4]
+    type33 = typelist[2].goodsinfo_set.order_by('-gclick')[0: 4]
 
-    type4 = typelist[3].goodsinfo_set.order_by('-id')
-    type44 = typelist[3].goodsinfo_set.order_by('-gclick')
+    type4 = typelist[3].goodsinfo_set.order_by('-id')[0: 4]
+    type44 = typelist[3].goodsinfo_set.order_by('-gclick')[0: 4]
 
-    type5 = typelist[4].goodsinfo_set.order_by('-id')
-    type55 = typelist[4].goodsinfo_set.order_by('-gclick')
+    type5 = typelist[4].goodsinfo_set.order_by('-id')[0: 4]
+    type55 = typelist[4].goodsinfo_set.order_by('-gclick')[0: 4]
 
-    type6 = typelist[5].goodsinfo_set.order_by('-id')
-    type66 = typelist[5].goodsinfo_set.order_by('-gclick')
+    type6 = typelist[5].goodsinfo_set.order_by('-id')[0: 4]
+    type66 = typelist[5].goodsinfo_set.order_by('-gclick')[0: 4]
 
     context = {
         'title': '首页',
@@ -60,7 +60,7 @@ def list(request, pid, pindex, sort):
     typeinfo = GoodsType.objects.get(pk=int(pid))
 
     # 根据时间id查处最新的两条放在左边的新品推荐里面
-    news = typeinfo.goodsinfo_set.order_by('-id')
+    news = typeinfo.goodsinfo_set.order_by('-id')[0:2]
 
     # 根据不同的排序方式查询数据
     if sort == '1':   # 默认方式
@@ -108,25 +108,51 @@ def detail(requeset, num):
 
     # 通过子 找 父 再 通过父找出所有的子
 
-    news = goods.gtype.goodsinfo_set.order_by('-id')
+    news = goods.gtype.goodsinfo_set.order_by('-id')[0:2]
+
 
     context = {
         'title': goods.gtype.ttitle,
         'page_num': 2,
         'goods': goods,
         'news': news,
-        'num': num
+        'num': num,
     }
 
+    response = render(requeset, 'df_goods/detail.html', context)
+
+    # 把用户最近的浏览信息记录到cookie中
+
+    goods_ids =  requeset.COOKIES.get('goods_ids', '')
+
+    # 把商品的id转换成字符串
+    goods_id = '%d' % goods.id
+
+    # 判断是否有浏览记录
+    if goods_ids != '':
+        # 把结果拆成一个列表
+        goods_ids1 = goods_ids.split(',')
+        if goods_ids1.count(goods_id) >= 1:   #如果已经有了记录，就不再记录
+            goods_ids1.remove(goods_id)
+        else:
+            goods_ids1.insert(0, goods_id)
 
 
+        if len(goods_ids1) >=6:   # 只保留五条浏览记录
+            del goods_ids1[5]
+        else:
+            # 拼接字符串
+            goods_ids = ','.join(goods_ids1)
 
-    return render(requeset, 'df_goods/detail.html', context)
 
+    else:
+        # 如果没有浏览记录则直接添加
+        goods_ids = goods_id
 
+    # 写到cookie中
+    response.set_cookie('goods_ids', goods_ids)
 
-
-
+    return response
 
 
 

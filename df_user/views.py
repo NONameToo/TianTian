@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
-from .models import *
 from hashlib import sha1
+from .login import *
+from .models import *
+from df_goods.models import *
 
 def register(request):
     title = '天天生鲜-注册页'
@@ -73,6 +75,7 @@ def login(request):
     # 把cookie中的用户名取出来
 
     uname = request.COOKIES.get('uname', '')
+    # uname = ''
 
     # 在通过context 传回去，就能实现记住用户名
 
@@ -103,7 +106,11 @@ def login_handle(request):
         if pwd2 == list[0].upwd:
             # return HttpResponse('登陆成功')
             # 构造一个HttpResponseRedirect对象
-            red = HttpResponseRedirect('/user/info/')
+
+            # 如果登陆成功就跳转回到之前的请求的地址
+
+            url = request.COOKIES.get('url', '/goods/')
+            red = HttpResponseRedirect(url)
 
             #记住用户名
             if remember != 0:
@@ -129,19 +136,46 @@ def login_handle(request):
         return render(request, 'df_user/login.html', context)
 
 
+# 退出登陆
+
+def logout(request):
+    request.session.flush()
+    return redirect('/goods/')
+
+
+
+
 
 # 用户信息页面
 
+@login_check
 def info(request):
 
     uname = request.session.get('uname')
     list = UserInfo.objects.filter(uname=uname)
 
-    context = {'title': '个人中心', 'user': list[0], 'page_num':1}
+    # 浏览历史记录
+
+    goods_ids = request.COOKIES.get('goods_ids', '')
+
+    goods_list = []
+
+    if goods_ids != '':
+        goods_ids1 = goods_ids.split(',')
+
+        for goods_id in goods_ids1:
+            goods_list.append(GoodsInfo.objects.get(id=int(goods_id)))
+
+    context = {
+        'title': '个人中心',
+        'user': list[0],
+        'page_num': 1,
+        'goods_list': goods_list
+    }
     return render(request, 'df_user/info.html', context)
 
 # 用户订单页面
-
+@login_check
 def order(request):
 
     # uname = request.session.get('uname')
@@ -150,7 +184,7 @@ def order(request):
     #     context = {'title': '我的订单', 'uname': uname, 'uphone': list[0].uphone, 'uaddr': list[0].uaddr}
     context = {'title': '我的订单', 'page_num':1}
     return render(request, 'df_user/order.html', context)
-
+@login_check
 def site(request):
 
     # 根据id把那一条数据对象找出来
