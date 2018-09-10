@@ -5,15 +5,27 @@
 
 <script type="text/javascript" src="/static/tiantian/js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/static/tiantian/js/slide.js"></script>
+    <script type="text/javascript">
+        $(function () {
+      $.get('/cart/cart_count/', function (date) {
+            $('#show_count').html(date.count)
+
+        });
+
+
+
+
+    })
+
+    </script>
+
+
+
+
 
 {% endblock  %}
 
 {% block classify %}
-
-
-
-
-
 
 
 {% endblock %}

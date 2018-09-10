@@ -1,0 +1,214 @@
+{% extends 'df_user/base.html' %}
+{% block head %}
+    <script type="text/javascript">
+
+
+
+
+
+{#    计算小计和总计#}
+    function total() {
+{#        总计多少钱：#}
+        money =　0;
+
+{#        总计多少种商品#}
+        count = 0;
+
+        $('.col07').each(function () {
+{#            获取数量：#}
+            num = $(this).prev().find('input').val();
+{#            获取单价#}
+            price = $(this).prev().prev().text();
+{#            计算小计#}
+            small_money = (parseFloat(num)*parseFloat(price));
+
+            $(this).text(small_money);
+
+{#            累计钱#}
+
+            money += small_money;
+{#            累计件数#}
+            count ++;
+
+
+{#            显示总计#}
+
+            $('#money').html(money);
+            $('#count').html(count);
+            $('#count1').html(count);
+
+
+
+        })
+
+
+
+
+
+    }
+
+
+
+
+    $(function () {
+        total();
+        $('.add').click(function () {
+
+            txt = $(this).next();
+            txt.val(parseFloat(txt.val()) + 1).blur();
+
+        })
+       $('.minus').click(function () {
+
+        txt = $(this).prev();
+         txt.val(parseFloat(txt.val())- 1).blur();
+
+        })
+
+
+
+
+
+        $('#check_all').click(function () {
+
+{#            查询当前元素的属性的状态#}
+
+            var status　=  $(this).prop('checked');
+            $(':checkbox:not(#check_all)').prop('checked', status)
+
+        });
+
+{#         当除了全选以外的选择框被点击时：#}
+        $(':checkbox:not(#check_all)').click(function () {
+            if ($('#check_all').prop('checked')){
+                 $('#check_all').prop('checked', false)
+
+                 }else{
+
+                 if($(':checked').length+1 == $(':checkbox').length){
+
+                     $('#check_all').prop('checked', true)}
+            }
+
+
+        })
+
+
+
+
+
+
+{#           当手动输入数值时#}
+         $('.num_show').blur(function () {
+
+             value = parseInt($(this).val()).toFixed(0);
+
+             if (value <0){
+                 $(this).val(0);
+             }else{
+                 $(this).val(value);
+             }
+
+             cart_id = $(this).parents('.cart_list_td').attr('id');
+
+{#             发送修改请求到数据库#}
+
+             $.get('/cart/edit'+cart_id+'_'+ value+'/', function (data) {
+                 if(data.back == 0){
+{#                     修改成功#}
+                     total();
+
+
+                 }else{
+{#                     修改失败#}
+                     (this).val(data.count);
+
+                 }
+             })
+        });
+
+         $('.del').click(function () {
+             conf = confirm('确定删除吗？');
+             if (conf){
+
+                              cart_id = $(this).parents('.cart_list_td').attr('id');
+
+             $.get('/cart/del'+cart_id+'/', function (data) {
+
+                 if(data.back == 0){
+{#                     删除成功#}
+                     $('ul').remove('#'+cart_id);
+                     total();
+                 }
+
+
+
+             })
+
+
+             }
+
+
+
+
+         })
+
+
+
+
+    })
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+
+{% endblock %}
+{% block content %}
+
+
+
+
+	<div class="total_count">全部商品<em id="count1">{{ carts.number }}</em>件</div>
+	<ul class="cart_list_th clearfix">
+		<li class="col01">商品名称</li>
+		<li class="col02">商品单位</li>
+		<li class="col03">商品价格</li>
+		<li class="col04">数量</li>
+		<li class="col05">小计</li>
+		<li class="col06">操作</li>
+	</ul>
+    {% for cart in carts %}
+	<ul class="cart_list_td clearfix" id="{{ cart.id }}">
+		<li class="col01"><input type="checkbox" name="" checked></li>
+		<li class="col02"><img src="/static/media/{{ cart.goods.gpic }}"></li>
+		<li class="col03">{{ cart.goods.gtitle }}<br><em>{{ cart.goods.gprice }}/{{ cart.goods.gunite }}</em></li>
+		<li class="col04">{{ cart.goods.gunite }}</li>
+		<li class="col05">{{ cart.goods.gprice }}元</li>
+		<li class="col06">
+			<div class="num_add">
+				<a href="javascript:;" class="add fl">+</a>
+				<input type="text" class="num_show fl" value="{{ cart.number }}">
+				<a href="javascript:;" class="minus fl">-</a>
+			</div>
+		</li>
+		<li class="col07">{{ cart.goods.gprice }}&nbsp;元</li>
+		<li class="col08"><a href="javascript:;" class="del">删除</a></li>
+	</ul>
+{% endfor %}
+
+	<ul class="settlements">
+		<li class="col01"><input type="checkbox" name="" checked="" id="check_all"></li>
+		<li class="col02">全选</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em id="money">42.60</em><br>共计<b id="count">2</b>件商品</li>
+		<li class="col04"><a href="/cart/order/">去结算</a></li>
+	</ul>
+
+{% endblock %}

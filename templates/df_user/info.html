@@ -1,4 +1,13 @@
 {% extends 'df_user/base.html' %}
+{% block head %}
+
+
+
+
+
+
+
+{% endblock %}
 
 {% block content %}
 	<div class="main_con clearfix">
@@ -32,7 +41,7 @@
                                 <div class="operate">
                                     <span class="prize">￥{{ each.gprice }}</span>
                                     <span class="unit">{{ each.gprice }}/{{ each.gunite }}</span>
-                                    <a href="#" class="add_goods" title="加入购物车"></a>
+                                    <a href="/cart/add{{ each.id }}_1" class="add_goods" title="加入购物车"></a>
                                 </div>
 
                             </li>

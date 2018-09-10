@@ -6,7 +6,7 @@
         {#   计算价格   #}
     function add() {
         var num = parseFloat($('.num_show').val());
-        $('.num_show').val(num+1)
+        $('.num_show').val(num+1);
         $('.num_show').blur();
     }
 
@@ -19,8 +19,34 @@
         }
     }
 
+    function add_to_cart() {
+
+
+        var num = $('.num_show').val();
+
+        $.get('/cart/add'+'{{ goods.id }}'+'_'+num, function (date) {
+            $('#show_count').html(date.count)
+
+        })
+
+
+    }
+
+    function count() {
+        $.get('/cart/cart_count/', function (date) {
+            $('#show_count').html(date.count)
+
+        });
+
+    }
+
+
 
     $(function () {
+
+        count();
+
+
         {#   当失去焦点的时候进行计算#}
          $('.num_show').blur(function () {
 
@@ -40,7 +66,13 @@
 
              $('#gcount').text(total.toFixed(2)+'元');
 
-        })
+        });
+
+
+         $('.add_cart').click(function () {
+             add_to_cart();
+
+         })
 
     })
 
@@ -123,7 +155,6 @@
 
 
 {% block javascript %}
-	<script type="text/javascript" src="js/jquery-1.12.2.js"></script>
 	<script type="text/javascript">
 		var $add_x = $('#add_cart').offset().top;
 		var $add_y = $('#add_cart').offset().left;
@@ -138,10 +169,12 @@
 				'top': $to_x+7},
 				"fast", function() {
 					$(".add_jump").fadeOut('fast',function(){
-						$('#show_count').html(2);
+{#						$('#show_count').html();#}
 					});
 
 			});
+
+
 		})
 	</script>
 {% endblock %}

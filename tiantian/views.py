@@ -28,7 +28,7 @@ def login(request):
 
 
 def place_order(request):
-    return render(request, 'tiantian/place_order.html')
+    return render(request, 'tiantian/order.html')
 
 
 def register(request):

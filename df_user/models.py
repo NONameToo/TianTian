@@ -13,6 +13,8 @@ class UserInfo(models.Model):
     uphone = models.CharField(max_length=11, default='')
     class Meta:
         db_table = 'UserInfo'
+    def __str__(self):
+        return self.uname.encode('utf-8')
 
 
 
