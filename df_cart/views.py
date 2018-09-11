@@ -30,13 +30,14 @@ def cart(request):
 #
 #     return render(requeset, 'df_cart/order.html', context)
 
+@login_check
 def cart_count(request):
     count = CartInfo.objects.filter(user_id=request.session.get('user_id')).count()
     return JsonResponse({'count': count})
 
 
 
-
+@login_check
 def add(request, gid, count):
 
     # 把数据写到数据库中，并返回购物车商品栏数
@@ -69,11 +70,11 @@ def add(request, gid, count):
         return JsonResponse({'count': count})
 
     else:
-        return  redirect('/cart/')
+        return redirect('/cart/')
 
 
 
-
+@login_check
 def  edit(request, cart_id, value):
     try:
         cart = CartInfo.objects.get(pk=int(cart_id))
@@ -89,7 +90,7 @@ def  edit(request, cart_id, value):
     else:
         return JsonResponse(data)
 
-
+@login_check
 def dele(request, cart_id):
     try:
         cart = CartInfo.objects.get(pk=cart_id)

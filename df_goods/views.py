@@ -6,6 +6,8 @@ from django.shortcuts import render
 from .models import *
 
 from django.core.paginator import Paginator
+from haystack.views import SearchView
+from df_cart.models import  *
 
 
 
@@ -53,6 +55,7 @@ def index(request):
 
 
 
+
 # 列表页
 
 def list(request, pid, pindex, sort):
@@ -81,6 +84,8 @@ def list(request, pid, pindex, sort):
 
     page = paginator.page(int(pindex))  # 显示第几页
 
+
+
     context = {
         'title': typeinfo.ttitle,
         'page_num': 2,
@@ -88,7 +93,7 @@ def list(request, pid, pindex, sort):
         'paginator': paginator,
         'typeinfo': typeinfo,
         'sort': sort,
-        'news': news
+        'news': news,
     }
 
 
@@ -155,7 +160,27 @@ def detail(requeset, num):
     return response
 
 
+#
+# # 购物车的数量
+# def cart_count(request):
+#     if request.session.has_key('user_id'):
+#         return CartInfo.objects.filter(id=request.session['user_id'])
+#     else:
+#         return 0
 
+
+
+
+
+
+
+# 自定义搜索的上下文
+class MySearchView(SearchView):
+    def extra_context(self):
+        context = super(MySearchView, self).extra_context()
+        context['title'] = '搜索'
+        context['page_num'] = 2
+        return context
 
 
 
